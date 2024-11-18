@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "buildCommand": false,
   "builds": [
     {
       "src": "client/package.json",
