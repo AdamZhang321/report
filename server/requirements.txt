@@ -1,7 +1,5 @@
 flask==2.0.1
 flask-cors==3.0.10
 python-dotenv==0.19.0
-langchain==0.1.0
-langchain_community==0.0.10
-pymupdf==1.19.0
-qianfan==0.0.3 
+qianfan==0.0.3
+pymupdf==1.19.0 
