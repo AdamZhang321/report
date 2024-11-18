@@ -11,5 +11,10 @@ bucket = "client/dist"
 [build.environment]
 NODE_VERSION = "18"
 
+# 添加后端 API 配置
+[[routes]]
+pattern = "/api/*"
+script = "server/api/index.py"
+
 [env.production]
 vars = { ENVIRONMENT = "production" } 
