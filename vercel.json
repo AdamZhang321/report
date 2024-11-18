@@ -1,11 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install && npm run build",
-  "outputDirectory": "client/dist",
+  "buildCommand": false,
   "builds": [
     {
       "src": "client/package.json",
-      "use": "@vercel/static-build"
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "cd client && npm install --force --no-optional && npm install @rollup/rollup-linux-x64-gnu@4.9.0 && npm run build",
+        "outputDirectory": "dist",
+        "installCommand": "npm install --no-optional"
+      }
     },
     {
       "src": "server/api/index.py",
@@ -18,11 +22,12 @@
       "dest": "server/api/index.py"
     },
     {
-      "handle": "filesystem"
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "client/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 } 
