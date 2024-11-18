@@ -17,14 +17,21 @@
         "maxLambdaSize": "5mb",
         "runtime": "python3.9",
         "excludeFiles": "**/*.{png,jpg,gif,webp,mp4,mp3,pdf}",
-        "handler": "index.handler"
+        "handler": "index.handler",
+        "memory": 1024,
+        "maxDuration": 10
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/api/index.py"
+      "dest": "server/api/index.py",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
     },
     {
       "src": "/assets/(.*)",
@@ -37,11 +44,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "functions": {
-    "server/api/index.py": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  }
+  ]
 } 
