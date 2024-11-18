@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import qianfan
 from werkzeug.utils import secure_filename
-import fitz  # PyMuPDF
+from PyPDF2 import PdfReader
 
 app = Flask(__name__)
 CORS(app)
@@ -32,11 +32,10 @@ def handle_upload():
             file.save(file_path)
 
             # 解析PDF
-            doc = fitz.open(file_path)
+            reader = PdfReader(file_path)
             text_content = ""
-            for page in doc:
-                text_content += page.get_text()
-            doc.close()
+            for page in reader.pages:
+                text_content += page.extract_text()
 
             # 创建千帆客户端
             chat_client = qianfan.ChatCompletion(
@@ -59,6 +58,9 @@ def handle_upload():
                     if 'result' in chunk:
                         yield f"data: {chunk['result']}\n\n"
 
+            # 删除临时文件
+            os.remove(file_path)
+
             return Response(
                 generate(),
                 mimetype='text/event-stream',
@@ -69,6 +71,9 @@ def handle_upload():
             )
 
         except Exception as e:
+            # 确保清理临时文件
+            if os.path.exists(file_path):
+                os.remove(file_path)
             return jsonify({'error': str(e)}), 500
 
     return jsonify({'error': 'Invalid request'}), 400

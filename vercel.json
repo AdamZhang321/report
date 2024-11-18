@@ -14,7 +14,8 @@
       "src": "server/api/index.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "10mb"
+        "maxLambdaSize": "5mb",
+        "runtime": "python3.9"
       }
     }
   ],
