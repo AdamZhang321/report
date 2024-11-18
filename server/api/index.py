@@ -4,19 +4,46 @@ import os
 import qianfan
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-# 配置上传文件夹
-UPLOAD_FOLDER = '/tmp'  # Vercel 只允许写入 /tmp 目录
+UPLOAD_FOLDER = '/tmp'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def parse_pdf(file_path):
+    """解析PDF文件"""
+    reader = PdfReader(file_path)
+    text_content = ""
+    for page in reader.pages:
+        text_content += page.extract_text()
+    return text_content
+
+def get_ai_response(text_content):
+    """获取AI解读结果"""
+    chat_client = qianfan.ChatCompletion(
+        ak=os.getenv('QIANFAN_AK'),
+        sk=os.getenv('QIANFAN_SK')
+    )
+    
+    response = chat_client.do(
+        messages=[{
+            "role": "user",
+            "content": f"作为一名专业的全科医生，请帮我解读这份体检报告，报告内容如下：{text_content}"
+        }],
+        model="ERNIE-Speed-128K",
+        temperature=0.1,
+        stream=True
+    )
+    return response
+
 @app.route('/api/uploadReport', methods=['POST'])
 def handle_upload():
+    """处理文件上传"""
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     
@@ -25,41 +52,26 @@ def handle_upload():
         return jsonify({'error': 'No selected file'}), 400
 
     if file:
+        file_path = None
         try:
-            # 保存文件
             filename = secure_filename(file.filename)
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
 
-            # 解析PDF
-            reader = PdfReader(file_path)
-            text_content = ""
-            for page in reader.pages:
-                text_content += page.extract_text()
-
-            # 创建千帆客户端
-            chat_client = qianfan.ChatCompletion(
-                ak=os.getenv('QIANFAN_AK'),
-                sk=os.getenv('QIANFAN_SK')
-            )
-
+            text_content = parse_pdf(file_path)
+            
             def generate():
-                response = chat_client.do(
-                    messages=[{
-                        "role": "user",
-                        "content": f"作为一名专业的全科医生，请帮我解读这份体检报告，报告内容如下：{text_content}"
-                    }],
-                    model="ERNIE-Speed-128K",
-                    temperature=0.1,
-                    stream=True
-                )
-
-                for chunk in response:
-                    if 'result' in chunk:
-                        yield f"data: {chunk['result']}\n\n"
-
-            # 删除临时文件
-            os.remove(file_path)
+                try:
+                    for chunk in get_ai_response(text_content):
+                        if 'result' in chunk:
+                            data = {
+                                'result': chunk['result'],
+                                'is_end': chunk.get('is_end', False)
+                            }
+                            yield f"data: {json.dumps(data)}\n\n"
+                finally:
+                    if file_path and os.path.exists(file_path):
+                        os.remove(file_path)
 
             return Response(
                 generate(),
@@ -71,8 +83,7 @@ def handle_upload():
             )
 
         except Exception as e:
-            # 确保清理临时文件
-            if os.path.exists(file_path):
+            if file_path and os.path.exists(file_path):
                 os.remove(file_path)
             return jsonify({'error': str(e)}), 500
 

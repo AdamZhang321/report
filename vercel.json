@@ -15,7 +15,9 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "5mb",
-        "runtime": "python3.9"
+        "runtime": "python3.9",
+        "excludeFiles": "**/*.{png,jpg,gif,webp,mp4,mp3,pdf}",
+        "handler": "index.handler"
       }
     }
   ],
@@ -26,11 +28,20 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "/assets/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "server/api/index.py": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 } 
