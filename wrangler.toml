@@ -1,0 +1,12 @@
+name = "report-analyzer"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "cd client && npm install && npm run build"
+output_dir = "client/dist"
+
+[site]
+bucket = "client/dist"
+
+[env.production]
+vars = { ENVIRONMENT = "production" } 
