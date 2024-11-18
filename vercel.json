@@ -5,9 +5,9 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "cd client && npm install --force --no-optional && npm install @rollup/rollup-linux-x64-gnu@4.9.0 && npm run build",
+        "buildCommand": "cd client && rm -rf node_modules package-lock.json && npm install --platform=linux --arch=x64 && npm install @esbuild/linux-x64@0.19.8 && npm run build",
         "outputDirectory": "dist",
-        "installCommand": "npm install --no-optional"
+        "installCommand": "npm install --platform=linux --arch=x64"
       }
     },
     {
