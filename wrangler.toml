@@ -11,10 +11,23 @@ bucket = "client/dist"
 [build.environment]
 NODE_VERSION = "18"
 
-# 添加后端 API 配置
+# Workers 配置
+[workers_dev]
+enabled = true
+
+[[workers]]
+name = "report-api"
+main = "server/api/index.py"
+compatibility_date = "2024-01-01"
+
 [[routes]]
 pattern = "/api/*"
-script = "server/api/index.py"
+zone_name = "your-domain.com"
+script = "report-api"
 
 [env.production]
-vars = { ENVIRONMENT = "production" } 
+vars = { 
+  ENVIRONMENT = "production",
+  QIANFAN_AK = "your-ak",
+  QIANFAN_SK = "your-sk"
+} 

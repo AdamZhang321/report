@@ -1,12 +1,12 @@
 <template>
-  <!-- 整体容器：最小高度为屏幕高度，蓝色背景，内边距4，子元素间距6 -->
-  <div class="min-h-screen bg-blue-600 p-4 space-y-6">
+  <!-- 整体容器：最小高度为屏幕高度，蓝色背景，内边距4，子元素间距6，添加适当的顶部间距 pt-4 -->
+  <div class="min-h-screen bg-blue-600 px-4 pb-4 pt-4 space-y-6">
     <!-- 头部区域：包含标题和图片 -->
-    <div class="flex justify-between items-start max-w-2xl mx-auto pt-8">
+    <div class="flex justify-between items-start max-w-2xl mx-auto">
       <!-- 左侧文字区域 -->
       <div class="space-y-4" style="margin-left: 2px;">
         <!-- 主标题 -->
-        <h1 class="text-3xl font-bold text-white mt-10">报告解读助手</h1>
+        <h1 class="text-3xl font-bold text-white">报告解读助手</h1>
         <!-- 特点标签区域 -->
         <div class="flex gap-4">
           <!-- "专业可靠"标签 -->
@@ -49,10 +49,10 @@
     </div>
 
     <!-- FAQ常见问题区域 -->
-    <div class="max-w-2xl mx-auto bg-white rounded-lg p-6">
-      <div class="text-center text-blue-600 font-medium mb-4 text-lg">常见问题</div>
+    <div class="max-w-2xl mx-auto bg-white rounded-lg p-4">
+      <div class="text-center text-blue-600 font-medium mb-3 text-lg">常见问题</div>
       <!-- FAQ列表 -->
-      <div class="space-y-4">
+      <div class="space-y-3">
         <div v-for="faq in faqs" :key="faq.question">
           <h3 class="text-blue-600 font-medium">{{ faq.question }}</h3>
           <p class="text-gray-600 mt-1">{{ faq.answer }}</p>
@@ -180,6 +180,6 @@ const handleFileChange = async (event) => {
 .pos {
   position: absolute;
   right: 0px;
-  top: 40px;
+  top: 0px;
 }
 </style> 

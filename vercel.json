@@ -5,22 +5,13 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "cd client && rm -rf node_modules package-lock.json && npm install --platform=linux --arch=x64 && npm install @esbuild/linux-x64@0.19.8 && npm run build",
-        "outputDirectory": "dist",
-        "installCommand": "npm install --platform=linux --arch=x64"
+        "buildCommand": "cd client && npm install && npm run build",
+        "outputDirectory": "dist"
       }
     },
     {
       "src": "server/api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "5mb",
-        "runtime": "python3.9",
-        "excludeFiles": "**/*.{png,jpg,gif,webp,mp4,mp3,pdf}",
-        "handler": "index.handler",
-        "memory": 1024,
-        "maxDuration": 10
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
